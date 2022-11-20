@@ -1,0 +1,22 @@
+port: 80
+db:
+    mysql:
+        -   host: 127.0.0.1
+            port: '3376'
+            connectionLimit: 10
+            multipleStatements: true
+            username: qswms
+            password: '<U8_eoU>"ReX\ZZN'
+            database: BD_WMS
+            nameconn: audit_wms
+            dialect: mysql
+            lang: ES
+wms:
+    username: wmsapi
+    password: Inre2023
+    endpoint: https://ta24.wms.ocs.oraclecloud.com:443/inka3_test
+contacts:
+    - name: FranPerez
+      email: franperez.orion@gmail.com
+    - name: PedroMendoza
+      email: pedromendozaardiles@gmail.com

@@ -1,0 +1,659 @@
+swagger: "2.0"
+info:
+  description: "DOCUMENTACION SERVICIOS REST AUDITORIA-CART-BACK"
+  version: "1.1.0"
+  title: "WS AUDITORIA-CART-BACK API"
+  contact:
+    name: "Fran Perez"
+    email: "franperez.orion@gmail.com"
+host: "localhost:80"
+basePath: "/api/v1/auditoria"
+tags:
+  - name: "auth"
+    description: "Datos de Acceso a usuario"
+  - name: "tipoDocumento"
+    description: "Datos de Tipo de Documentos"
+  - name: "roles"
+    description: "Roles para el mantenedor de Usuarios"
+  - name: "usuarios"
+    description: "Data de Usuarios en GES"
+  - name: "perfiles"
+    description: "Data de Perfiles de Usuarios"
+  - name: "cartones"
+    description: "Data de Cartones"
+securityDefinitions:
+  APPKeyHeader:
+    # app_key: YXBwX2JsdWVfeW9uZGVyXzIwMjA=$h
+    type: "apiKey"
+    in: "header"
+    name: "APP_KEY"
+    description: "Todas las peticiones incluirá el APP_KEY header requerido para el ID de la aplicación"
+  AutorizationHeader:
+    # token user: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkbmkiOiIxMjM0NTY3OCIsIm5vbWJyZSI6IkdFTkVSSUNPIiwiYXBlcGF0IjoiR0VORVJJQ08iLCJhcGVtYXQiOiJHRU5FUklDTyIsInRpbWVTdGFtcCI6MTYwNjc1MTI2MSwiaWF0IjoxNjA2NzUxMjYxfQ.ynoTh9-KiLGtSRomfIkepCCr0QZ-VkdVyiliDYtmGY4
+    type: "apiKey"
+    in: "header"
+    name: "AUTHORIZATION"
+    description: "Sólo peticiones que necesiten validación del token"
+# Apply the "app_key" header globally to all paths and operations
+security:
+  - APPKeyHeader: []
+  - AutorizationHeader: []
+paths:
+  /login:
+    post:
+      tags:
+        - "auth"
+      summary: "Guardar los datos de Auth"
+      description: "Proceso que realiza el login"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Objeto que contiene los datos del login"
+          required: true
+          schema:
+            $ref: "#/definitions/accesoUsuario.DatosLogin"
+      responses:
+        200:
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/accesoUsuario.SalidaLogin'
+  /role:
+    get:
+      tags:
+        - "roles"
+      summary: "Obtener datos de los roles"
+      description: "Retorna todas la lista de Roles"
+      operationId: "GetRoleList"
+      responses:
+        200:
+          description: "Consulta exitosa"
+  /user:
+    # get:
+    post:
+      tags:
+        - "usuarios"
+      summary: "Guardar los datos de un Usuario"
+      description: "Guarda datos de un Usuario; insertar un nuevo registro"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Objeto que contiene los datos de Usuario"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectUsuario"
+      responses:
+        "200":
+          description: "Registro exitoso"
+  # /user/id:
+  #   get:
+  /user/{id}:
+    delete:
+      tags:
+        - "usuarios"
+      summary: Dar de baja a un usuario
+      description: Proceso en el que se de da de baja al usuario del Sistema.
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: id
+          in: path
+          description: Codigo de Usuario
+          required: true
+          type: string
+        - name: "body"
+          in: "body"
+          schema:
+            type: "object"
+            properties:
+              user:
+                type: "string"
+              userModification:
+                type: "string"
+              typeUser:
+                type: "string"
+      responses:
+        200:
+          description: "Consulta exitosa"
+    patch:
+      tags:
+        - "usuarios"
+      summary: "Actualizar Usuario por Codigo"
+      description: "Actualiza los datos de un registro Usuario por Codigo"
+      parameters:
+        - name: id
+          in: path
+          description: Codigo Usuario a actualizar
+          required: true
+          type: string
+        - name: "body"
+          in: "body"
+          description: "Objeto que contiene los datos de Usuario"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectUsuario"
+      responses:
+        200:
+          description: "Consulta exitosa"
+  /user/type-user:
+    get:
+      tags:
+        - "usuarios"
+      summary: "Obtener datos de los tipos de usuarios"
+      description: "Retorna toda la lista de tipos de usuarios"
+      operationId: "GetTypeUserList"
+      responses:
+        200:
+          description: "Consulta exitosa"
+  /user/state:
+    get:
+      tags:
+        - "usuarios"
+      summary: "Obtener datos de los estados de usuarios"
+      description: "Retorna toda la lista de estados de usuarios"
+      operationId: "GetStateList"
+      responses:
+        200:
+          description: "Consulta exitosa"
+  /user/excel:
+    get:
+      tags:
+        - "usuarios"
+      summary: "Descargar un archivo Excel con la relación de Usuarios"
+      description: "Retorna un archivo Excel con la relación de Usuarios"
+      produces: [ "application/msexcel" ]
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            type: file
+  /user/wms:
+    post:
+      tags:
+        - "usuarios"
+      summary: "Actualiza las credenciales del usuario por el API de WMS"
+      description: "Retorna un estado de respuesta"
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectUpdateUserByWMS"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      result:
+                        type: "string"
+                        default: "0"
+  
+  /type-document:
+    get:
+      tags:
+        - "tipoDocumento"
+      summary: "Obtener datos de los tipos de documentos"
+      description: "Retorna toda la lista de tipos de documentos"
+      operationId: "GetAllTypeDocument"
+      responses:
+        200:
+          description: "Consulta exitosa"
+  /profile-maintenance:
+    get:
+      tags:
+        - "perfiles"
+      summary: "Obtener datos perfiles de usuarios"
+      operationId: "GetAllProfileMaintenance"
+      parameters:
+        - name: "page_number"
+          in: "query"
+          description: "Página actual"
+          required: false
+          type: "number"
+        - name: "page_size"
+          in: "query"
+          description: "Número de ítems por página"
+          required: false
+          type: "number"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      data:
+                        type: "array"
+                        items:
+                          allOf:
+                            - $ref: '#/definitions/ObjectProfile'
+    post:
+      tags:
+        - "perfiles"
+      summary: "Guardar los datos de un Perfil"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Objeto que contiene los datos de Empresa"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectSaveProfile"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+  /profile-maintenance/id:
+    get:
+      tags:
+        - "perfiles"
+      summary: "Obtener datos perfiles de usuarios By ID"
+      operationId: "GetProfileMaintenance"
+      parameters:
+        - name: "id"
+          in: "query"
+          required: false
+          type: "string"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+  /profile-maintenance/{id}:
+    delete:
+      tags:
+        - "perfiles"
+      summary: Elimina Perfil por Id
+      description: Esto solo puede hacerlo el usuario que inició sesión.
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: id
+          in: path
+          description: El Id de Perfil a eliminar
+          required: true
+          type: integer
+        - name: "body"
+          in: "body"
+          schema:
+            type: "object"
+            properties:
+              user:
+                type: "string"
+      responses:
+        400:
+          description: Invalid Id supplied
+        404:
+          description: Empresa not found
+        200:
+          description: Datos Eliminados Correctamente
+    patch:
+      tags:
+        - "perfiles"
+      summary: "Actualizar Perfiles por id"
+      description: "Actualiza los datos de un registro de Perfil por Id"
+      parameters:
+        - name: id
+          in: path
+          description: El id Perfil a actualizar
+          required: true
+          type: integer
+        - name: "body"
+          in: "body"
+          description: "Objeto que contiene los datos de Perfil"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectSaveProfile"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+  /profile-maintenance/views-by-modules:
+    post:
+      tags:
+        - "perfiles"
+      summary: "Obtener Vistas por Usuarios"
+      operationId: "GetViewProfileMaintenance"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      data:
+                        type: "array"
+                        items:
+                          allOf:
+                            - $ref: '#/definitions/ObjectViewModules'
+  /profile-maintenance/views-by-rol:
+    post:
+      tags:
+        - "perfiles"
+      summary: "Obtener Vistas por Rol"
+      operationId: "GetViewByRol"
+      parameters:
+        - name: "rolId"
+          in: "query"
+          description: "Rol id"
+          required: false
+          type: "number"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      data:
+                        type: "array"
+                        items:
+                          allOf:
+                            - $ref: '#/definitions/ObjectViewModules'
+  /profile-maintenance/iu-rol:
+    post:
+      tags:
+        - "perfiles"
+      summary: "Guardar los datos de Vistas por Rol"
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/ObjectSaveViewByRol"
+      responses:
+        "200":
+          description: "Datos Guardados Correctamente"
+  /ges/profile-maintenance/excel:
+    get:
+      tags:
+        - "perfiles"
+      summary: "Descargar un archivo Excel con la relación de Perfiles"
+      description: "Retorna un archivo Excel con la relación de Perfiles"
+      parameters:
+        - name: "page_number"
+          in: "query"
+          description: "Numero de paginas a recuperar en la consulta"
+          required: true
+          type: "string"
+          default: 1
+        - name: "page_size"
+          in: "query"
+          description: "Tamaño de la pagina, es decir la cantidad de registros por pagina"
+          required: true
+          type: "string"
+          default: 10
+      produces: [ "application/msexcel" ]
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            type: file
+  /box/get-container:
+    get:
+      tags:
+        - "cartones"
+      summary: "Obtener datos de cartones"
+      operationId: "GetContainerOBLPN"
+      parameters:
+        - name: "container_id"
+          in: "query"
+          required: true
+          type: "string"
+          description: "Código de barras del contenedor"
+        - name: "facility_code"
+          in: "query"
+          required: true
+          type: "string"
+          description: "Código del pallet"
+        - name: "company_code"
+          in: "query"
+          required: true
+          type: "string"
+          description: "Código de la empresa asociada"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      data:
+                        type: "array"
+                        items:
+                          allOf:
+                            - properties:
+                                data:
+                                  type: object
+  /box/get-inventary:
+    get:
+      tags:
+        - "cartones"
+      summary: "Obtener datos de inventario de SKU"
+      operationId: "GetInventaryBox"
+      parameters:
+        - name: "container_id"
+          in: "query"
+          required: true
+          type: "string"
+          description: "Código de barras del contenedor"
+        - name: "facility_code"
+          in: "query"
+          required: true
+          type: "string"
+          description: "Código del pallet"
+      responses:
+        "200":
+          description: "Consulta exitosa"
+          schema:
+            allOf:
+              - $ref: '#/definitions/APIResponse'
+              - properties:
+                  Resp:
+                    type: object
+                    properties:
+                      data:
+                        type: "array"
+                        items:
+                          allOf:
+                            - properties:
+                                data:
+                                  type: object
+  
+definitions:
+  APIResponse:
+    type: object
+    properties:
+      status:
+        description: Response status `Success` or `Failure`
+        type: string
+        enum: ["Success", "Failure"]
+      Resp:
+        type: "object"
+        properties:
+          Error:
+            type: string
+          message:
+            type: string
+            example: Success Response
+          data:
+            description: Result body
+      timestamp:
+        description: UTC timestamp in ISO 8601 format
+        type: string
+    required:
+      - status
+      - timestamp
+      - Resp
+    xml:
+      name: "APIResponse"
+  accesoUsuario.DatosLogin:
+    type: object
+    properties:
+      user:
+        type: string
+      password:
+        type: string
+      deviceId:
+        type: string
+  accesoUsuario.SalidaLogin:
+    type: object
+    properties:
+      message:
+        type: string
+      status:
+        type: string
+      token:
+        type: string
+      userData:
+        type: object
+        properties:
+          code:
+            type: string
+          nombre:
+            type: string
+          apepat:
+            type: string
+          apemat:
+            type: string
+          timeStamp:
+            type: number
+      userModules:
+        type: object
+      userAuthorizes:
+        type: object
+        
+  ObjectUsuario:
+    type: "object"
+    properties:
+      user:
+        type: "string"
+      password:
+        type: "string"
+      name:
+        type: "string"
+      patherName:
+        type: "string"
+      motherName:
+        type: "string"
+      socialReason:
+        type: "string"
+      typeUser:
+        type: "string"
+      roleId:
+        type: "string"
+    xml:
+      name: "ObjectUsuario"
+  ObjectProfile:
+    type: object
+    properties:
+      RN:
+        type: number
+      ROL_ID:
+        type: number
+      DESCRIPCION_ROL:
+        type: string
+      USU_CREACION:
+        type: string
+      FEC_CREACION:
+        type: string
+      USU_MODIFICACION:
+        type: string
+      FEC_MODIFICACION:
+        type: string
+    xml:
+      name: ObjectUsuario
+  ObjectSaveProfile:
+    type: object
+    properties:
+      perfil:
+        type: string
+    xml:
+      name: ObjectSaveProfile
+  ObjectViewModules:
+    type: object
+    properties:
+      VISTA_ID:
+        type: number
+      DESC_VISTA:
+        type: string
+      MODULO_ID:
+        type: number
+      DESC_MODULO:
+        type: string
+    xml:
+      name: ObjectViewModules
+  ObjectSaveViewByRol:
+    type: object
+    properties:
+      rolId:
+        type: number
+      rolDescription:
+        type: string
+      modules:
+        type: string
+      mode:
+        type: string
+    xml:
+      name: ObjectSaveViewByRol
+  ObjectUpdateUserByWMS:
+    type: object
+    properties:
+      usuario:
+        description: "Usuario de Satelite QS"
+        type: number
+        default: "12345678123"
+      user_id:
+        description: "ID único generado por WMS"
+        type: number
+        default: 781
+      user_url:
+        description: "URL de la API generado por WMS, con parametro ID de usuario"
+        type: string
+        default: "https://ta24.wms.ocs.oraclecloud.com:443/inka3_test/wms/lgfapi/v10/entity/user/781"
+      facily_id:
+        description: "ID del Local principal del usuario en WMS"
+        type: number
+        default: 1
+      facility_code:
+        description: "Código del Local principal del usuario en WMS"
+        type: string
+        default: "1201"
+      company_id:
+        description: "ID de la compañia del usuario en WMS"
+        type: number
+        default: 1
+      company_code:
+        description: "Código de la compañia del usuario en WMS"
+        type: string
+        default: "QUICORP"
+      auth_user_id:
+        description: "ID interno del usuario"
+        type: number
+        default: 833
+      username:
+        description: "Usuario de ingreso WMS"
+        type: string
+        default: "dflores"
+      wms_is_active:
+        description: "Valor que indica si el usuario esta activo en WMS; 1 ACTIVO, 0 INACTIVO"
+        type: boolean
+        default: true
+      wms_univ_id_1:
+        description: "Identifiador de WMS para recuperar los datos de usuario WMS"
+        type: number
+        default: 12345678123

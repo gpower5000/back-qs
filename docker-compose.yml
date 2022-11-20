@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  satelitesatqa.api:
+    image: ${DOCKER_REGISTRY}satelitesatqa
+    build:
+      context: .
+      dockerfile: Dockerfile
