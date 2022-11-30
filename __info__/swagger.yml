@@ -7,7 +7,7 @@ info:
     name: "Fran Perez"
     email: "franperez.orion@gmail.com"
 host: "localhost:80"
-basePath: "/api/v1/auditoria"
+basePath: "/satqs/api/v1/auditoria"
 tags:
   - name: "auth"
     description: "Datos de Acceso a usuario"

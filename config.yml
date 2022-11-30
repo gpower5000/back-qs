@@ -2,7 +2,7 @@ port: 80
 db:
     mysql:
         -   host: 127.0.0.1
-            port: '3376'
+            port: '3306'
             connectionLimit: 10
             multipleStatements: true
             username: qswms

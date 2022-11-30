@@ -1,7 +1,10 @@
 
+const path = require('path');
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-const config = require('config-yml');
+const YAML = require('yamljs');
+const dirPath = path.join(__dirname, '../config.yml');
+const config = YAML.load(dirPath);
 const env = require("./env");
 
 function createToken(user, timeCreation) {
@@ -12,6 +15,10 @@ function createToken(user, timeCreation) {
       apepat: user.APE_PATERNO,
       apemat: user.APE_MATERNO,
       userId: user.USER_ID,
+      currentFacilyCode: user.FACILITY_CODE,
+      currentFacilyId: user.FACILY_ID,
+      companyCode: user.COMPANY_CODE,
+      companyId: user.COMPANY_ID,
       timeStamp: timeCreation
     };
 

@@ -10,10 +10,10 @@ const STATUS_FAILURE = 'Failure';
 
 exports.GetContainerOBLPN = async (req, res) => {
     try {
-        const { container_nbr, facility_code, company_code } = req.query;
+        const { container_nbr, facility_code } = req.query;
 
-        if (!isEmpty(container_nbr) && !isEmpty(facility_code) && !isEmpty(company_code)) {
-            let data = await boxOrm.GetContainerOBLPN(container_nbr, facility_code, company_code);
+        if (!isEmpty(container_nbr) && !isEmpty(facility_code)) {
+            let data = await boxOrm.GetContainerOBLPN(container_nbr, facility_code);
             if (data.err) {
                 return res.status(enum_.CODE_BAD_REQUEST).send(
                     await util.ResponseService(STATUS_FAILURE, data.err.code, data.err.messsage, ''));

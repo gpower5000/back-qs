@@ -1,11 +1,11 @@
-FROM node:14-alpine3.15
+FROM node:18-slim
 
 RUN mkdir -p /usr/app/build
 WORKDIR /usr/app
 
 COPY ./package.json /usr/app/package.json
 
-RUN npm install --production --force --no-warnings || true
+RUN npm install --only=production --force
 
 # Bundle app source
 COPY . .

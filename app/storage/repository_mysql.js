@@ -1,4 +1,6 @@
 'use strict';
+const path = require('path');
+const YAML = require('yamljs');
 const mysqldb = require('mysql');
 const { logger } = require('../../utils/logger');
 
@@ -27,8 +29,8 @@ class MysqlRepository {
         try {
             let db = {};
             let arrayConns = [];
-            delete require.cache[require.resolve('config-yml')]
-            let config = require('config-yml');
+            const dirPath = path.join(__dirname, '../../config.yml');
+            const config = YAML.load(dirPath);
             if (config.db.mysql && config.db.mysql.length > 0) {
                 arrayConns = arrayConns.concat(config.db.mysql);
             }
@@ -36,13 +38,14 @@ class MysqlRepository {
                 for (const c of arrayConns) {
                     db[c.nameconn] = {};
                     var pool  = mysqldb.createPool({
-                      host              : c.host,
-                      port              : c.port,
-                      user              : c.username,
-                      password          : c.password,
-                      database          : c.database,
-                      connectionLimit   : c.connectionLimit,
-                      multipleStatements: c.multipleStatements,
+                      host              :process.env.DB_HOST || c.host,
+                      port              :process.env.DB_PORT || c.port,
+                      user              :process.env.DB_USERNAME || c.username,
+                      password          :process.env.DB_PASSWORD || c.password,
+                      database          :process.env.DB_DATABASE || c.database,
+                      // socketPath        :process.env.DB_SOCKET || undefined,
+                      connectionLimit   :c.connectionLimit,
+                      multipleStatements:c.multipleStatements,
                     });
                     logger.info('[[ pool ]]', pool);
                     db[c.nameconn] = { conn: pool }

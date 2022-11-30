@@ -2,13 +2,19 @@ const magic = require('../../../common/util/magic');
 const enum_ = require('../../../common/util/enum');
 const authOrm = require('../../storage/ormo/auth_orm');
 
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcryptjs");
 const moment = require("moment");
 
 const { createToken, validateToken, createSecrets } = require("../../../utils/ServiceToken");
 const { isEmpty } = require("../../../utils/validator.helper");
 const STATUS_SUCCESS = 'Success';
 const STATUS_FAILURE = 'Failure';
+
+exports.Health = async (req, res) => {
+  console.log('req', 'Ingresando a /satqs/api/v1/auditoria/health');
+  return res.status(enum_.CODE_OK).send(
+    await magic.ResponseService(STATUS_SUCCESS, '', 'Success Response', { Project: 'SATQS_hello ',db_host: process.env.DB_HOST }));
+};
 
 exports.SignIn = async (req, res) =>{
     try{

@@ -19,6 +19,8 @@ console.log(enum_.CYAN_LOG, '[GET] = /');
 const authRoute = async (req, res, next = console.error) => (
     await offline.DontAppUserKey(req, res, next)
 )
+
+router.get('/health/', auth.Health);
 /*** Login */
 router.post('/login/', auth.SignIn);
 router.get('/role', role.GetAllRole);
@@ -50,6 +52,7 @@ router.get('/box/get-inventary', authRoute, box.GetInventaryBox);
 router.post('/audit/start-or-close-process', authRoute, audit.StartCloseAuditProcess);
 router.patch('/audit/update-product-by-lotes', authRoute, audit.UpdateCreateProductByLotes);
 router.post('/audit/create-correlative', authRoute, audit.CreateCorrelative);
+router.post('/audit/tray-inventory', authRoute, audit.InsertInventaryBox);
 
 router.get('/type-document', typeDoc.GetAllTypeDocument);
 

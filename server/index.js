@@ -13,7 +13,7 @@ const cors       = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load(dirPath);
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+server.use('/satqs/api/v1/auditoria/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 server.use(helmet());
 server.use(cors());

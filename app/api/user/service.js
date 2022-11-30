@@ -1,6 +1,6 @@
 const util = require('../../../common/util/magic');
 const enum_ = require('../../../common/util/enum');
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcryptjs");
 const userOrm = require('../../storage/ormo/user_orm');
 const excelHelper = require('../../../utils/excel.helper');
 
